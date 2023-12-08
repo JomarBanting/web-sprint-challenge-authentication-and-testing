@@ -14,43 +14,50 @@ const { JWT_SECRET } = require("../secrets/index");
 const jwt = require("jsonwebtoken");
 
 async function restrict(req, res, next) {
-const token = req.headers.authorization;
-if (token) {
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    if (err){
-      next({
-        status: 401,
-        message: "token invalid"
-      })
-    } else {
-      req.decodedJwt = decoded,
-      next();
-    }
-  })
-} else {
-  next({
-    status: 401,
-    message: "token required"
-  })
-}
+  const token = req.headers.authorization;
+  if (token) {
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+      if (err) {
+        next({
+          status: 401,
+          message: "token invalid"
+        })
+      } else {
+        req.decodedJwt = decoded,
+          next();
+      }
+    })
+  } else {
+    next({
+      status: 401,
+      message: "token required"
+    })
+  }
 }
 
 async function checkUserAndPassword(req, res, next) {
-  const { username, password } = req.body;
-  const result = await User.findBy({ username: username })
-  if (result.length && password.length) {
-    req.user = result[0]
-    next();
-  } else if (!username.length || !password.length) {
+  try {
+    const { username, password } = req.body;
+    const result = await User.findBy({ "username": username })
+    if (result.length && password.length) {
+      req.user = result[0]
+      next();
+    } else if (!username.length || !password.length) {
+      next({
+        status: 401,
+        message: "username and password required"
+      })
+    }
+    else {
+      next({
+        status: 401,
+        message: "invalid credentials"
+      })
+    }
+  } catch (err) {
     next({
       status: 401,
       message: "username and password required"
-    })
-  }
-  else {
-    next({
-      status: 401,
-      message: "invalid credentials"
     })
   }
 }
