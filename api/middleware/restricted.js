@@ -62,7 +62,25 @@ async function checkUserAndPassword(req, res, next) {
   }
 }
 
+const checkUsernameExist = async (req, res, next) => {
+  try {
+    const {username} = req.body;
+    const user = await User.findBy({username})
+    if(user){
+      next({
+        status: 401,
+        message: "username taken"
+      });
+    } else {
+      next()
+    }
+  }catch(err){
+    next(err)
+  }
+}
+
 module.exports = {
   restrict,
   checkUserAndPassword,
+  checkUsernameExist
 };

@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken")
 const User = require("../jokes/users-joke-model")
 
-const { checkUserAndPassword } = require("../middleware/restricted")
+const { checkUserAndPassword, checkUsernameExist } = require("../middleware/restricted")
 /*
   IMPLEMENT
   You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -29,9 +29,9 @@ const { checkUserAndPassword } = require("../middleware/restricted")
     the response body should include a string exactly as follows: "username and password required".
 
   4- On FAILED registration due to the `username` being taken,
-    the response body should include a string exactly as follows: "username taken".
+     the response body should include a string exactly as follows: "username taken".
 */
-router.post("/register", async (req, res, next) => {
+router.post("/register", checkUsernameExist, async (req, res, next) => {
   try {
     const { username, password } = req.body;
     const hash = bcrypt.hashSync(password, BCRYPT_ROUNDS);
@@ -73,7 +73,7 @@ router.post('/login', checkUserAndPassword, async (req, res, next) => {
   */
   try {
     let { username, password } = req.body;
-    if (bcrypt.compareSync(password, req.user.password))  {
+    if (bcrypt.compareSync(password, req.user.password)) {
       const token = buildToken(req.user)
       res.status(200).json({
         message: `welcome, ${username}`,
