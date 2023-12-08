@@ -66,13 +66,12 @@ const checkUsernameExist = async (req, res, next) => {
   try {
     const {username} = req.body;
     const user = await User.findBy({username})
-    if(user){
+    if(user.length){
       next({
         status: 401,
         message: "username taken"
       });
     } else {
-      req.user = user
       next()
     }
   }catch(err){
