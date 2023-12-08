@@ -64,17 +64,22 @@ async function checkUserAndPassword(req, res, next) {
 
 const checkUsernameExist = async (req, res, next) => {
   try {
-    const {username} = req.body;
-    const user = await User.findBy({username})
-    if(user.length){
+    const { username, password } = req.body;
+    const user = await User.findBy({ username })
+    if (!user.length && password.length) {
+      next();
+    } else if (user.length) {
       next({
         status: 401,
         message: "username taken"
-      });
+      })
     } else {
-      next()
+      next({
+        status: 401,
+        message: "username and password required"
+      })
     }
-  }catch(err){
+  } catch (err) {
     next({
       status: 401,
       message: "username and password required"
