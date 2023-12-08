@@ -72,10 +72,14 @@ const checkUsernameExist = async (req, res, next) => {
         message: "username taken"
       });
     } else {
+      req.user = user
       next()
     }
   }catch(err){
-    next(err)
+    next({
+      status: 401,
+      message: "username and password required"
+    })
   }
 }
 
