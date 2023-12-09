@@ -1,4 +1,6 @@
 const db = require("../../data/dbConfig");
+const { BCRYPT_ROUNDS } = require("../secrets/index")
+const bcrypt = require("bcryptjs");
 
 function find() {
     return db("users");
@@ -22,10 +24,20 @@ async function remove(id) {
     return user;
 }
 
+async function update(id, changes) {
+    const { username, password } = changes;
+    const hash = bcrypt.hashSync(password, BCRYPT_ROUNDS);
+    const newUser = { username, password: hash };
+    await db("users").update(newUser).where("id", id)
+    const result = await db("users").where("id", id).first()
+    return result;
+}
+
 module.exports = {
     find,
     findBy,
     register,
     remove,
-    findById
+    findById,
+    update
 }

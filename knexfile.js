@@ -4,6 +4,7 @@ const sharedConfig = {
   useNullAsDefault: true,
   migrations: { directory: './data/migrations' },
   pool: { afterCreate: (conn, done) => conn.run('PRAGMA foreign_keys = ON', done) },
+  seeds: { directory: './data/seeds' },
 }
 
 module.exports = {

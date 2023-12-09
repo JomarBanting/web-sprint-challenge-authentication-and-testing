@@ -103,21 +103,30 @@ function buildToken(user) {
 router.delete("/users/:id", checkUserIdExist, async (req, res, next) => {
   const { id } = req.params
   User.remove(id)
+    .then(user => {
+      res.status(200).json(user)
+    }).catch(err => {
+      next(err)
+    })
+})
+
+router.get("/users", async (req, res, next) => {
+  try {
+    const users = await User.find()
+    res.status(200).json(users)
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.put("/users/:id", checkUsernameExist, (req, res, next) => {
+  const { id } = req.params;
+  User.update(id, req.body)
   .then(user => {
     res.status(200).json(user)
   }).catch(err => {
     next(err)
   })
 })
-
-router.get("/users", async (req, res, next) => {
-try {
-  const users = await User.find()
-  res.status(200).json(users)
-} catch (err) {
-  next(err)
-}
-})
-
 
 module.exports = router;
