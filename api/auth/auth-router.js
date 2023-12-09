@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken")
 const User = require("../jokes/users-joke-model")
 
-const { checkUserAndPassword, checkUsernameExist } = require("../middleware/restricted")
+const { checkUserAndPassword, checkUsernameExist, checkUserIdExist } = require("../middleware/restricted")
 /*
   IMPLEMENT
   You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -100,6 +100,24 @@ function buildToken(user) {
   }
   return jwt.sign(payload, `${JWT_SECRET}`, options)
 }
+router.delete("/users/:id", checkUserIdExist, async (req, res, next) => {
+  const { id } = req.params
+  User.remove(id)
+  .then(user => {
+    res.status(200).json(user)
+  }).catch(err => {
+    next(err)
+  })
+})
+
+router.get("/users", async (req, res, next) => {
+try {
+  const users = await User.find()
+  res.status(200).json(users)
+} catch (err) {
+  next(err)
+}
+})
 
 
 module.exports = router;

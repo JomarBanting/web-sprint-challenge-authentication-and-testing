@@ -16,8 +16,16 @@ async function register(user) {
     return findById(id);
 }
 
+async function remove(id) {
+    const user = await db("users").where("id", id).first()
+    await db("users").del().where("id", id)
+    return user;
+}
+
 module.exports = {
     find,
     findBy,
     register,
+    remove,
+    findById
 }

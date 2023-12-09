@@ -87,8 +87,21 @@ const checkUsernameExist = async (req, res, next) => {
   }
 }
 
+async function checkUserIdExist(req, res, next) {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  if (!user) {
+    res.status(400).json({
+      message: "Invalid User ID"
+    })
+  } else {
+    next()
+  }
+}
+
 module.exports = {
   restrict,
   checkUserAndPassword,
-  checkUsernameExist
+  checkUsernameExist,
+  checkUserIdExist
 };
